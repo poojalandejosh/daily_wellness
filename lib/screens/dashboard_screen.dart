@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:daily_wellness/core/constants/constant.dart';
-// import 'package:daily_wellness/core/controller/task_controller.dart';
 import 'package:daily_wellness/core/widgets/add_activity_screen.dart';
 import 'package:daily_wellness/providers/task_provider.dart';
 import 'package:daily_wellness/services/api/quote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+// Implemented using useSatet *********
+// import 'package:daily_wellness/core/controller/task_controller.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -39,12 +40,12 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _fetchQuote() async {
-  final result = await QuoteService.fetchQuoteOfTheDay();
-  setState(() {
-    quote = result['quote']!;
-    author = result['author']!;
-  });
-}
+    final result = await QuoteService.fetchQuoteOfTheDay();
+    setState(() {
+      quote = result['quote']!;
+      author = result['author']!;
+    });
+  }
 
   void _navigateToAddActivity() async {
     final result = await showGeneralDialog(
@@ -64,8 +65,10 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           //  implemented using useState *********
           // _taskController.addTask(data['activity']);
-          Provider.of<TaskProvider>(context, listen: false).addTasks(data['activity']);
-
+          Provider.of<TaskProvider>(
+            context,
+            listen: false,
+          ).addTasks(data['activity']);
         });
       }
     }
@@ -74,141 +77,174 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
+    final size = MediaQuery.of(context).size;
+    final isLandscape = size.width > size.height;
 
-
-    return Stack(
-      children: [
-        // 🔵 Linear Gradient Background
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 8, 8, 9), // Vivid purple
-                Color.fromARGB(255, 203, 20, 151),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        // ✅ SafeArea added here
+        child: Stack(
+          children: [
+            // 🔹 Gradient background
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 8, 8, 9),
+                    Color.fromARGB(255, 203, 20, 151),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
-          ),
-        ),
 
-        // ⚪ Foreground Scaffold with transparent background
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(dailyWellness, style: TextStyle(color: Colors.white)),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
+            // 🔸 Foreground content
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final contentPadding = isLandscape ? size.width * 0.15 : 16.0;
 
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Welcome, $userName 👋",
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Current Time: $currentTime",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(26, 17, 17, 17),
-                    borderRadius: BorderRadius.circular(8),
+                return SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    contentPadding,
+                    16, // Removed kToolbarHeight since SafeArea handles top padding
+                    contentPadding,
+                    32,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: Text(
+                          "DailyWellness",
+                          style: const TextStyle(
+                            fontSize: 30,
+                            color: Color.fromARGB(255, 111, 94, 94),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
                       Text(
-                        quote,
+                        "Welcome, $userName 👋",
                         style: const TextStyle(
-                          fontFamily: 'Caveat',
-                          fontSize: 28,
+                          fontSize: 24,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          "- $author",
-                          style: const TextStyle(color: Colors.white70),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Current Time: $currentTime",
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      const SizedBox(height: 16),
+
+                      /// Quote Card
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(26, 17, 17, 17),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              quote,
+                              style: const TextStyle(
+                                fontFamily: 'Caveat',
+                                fontSize: 28,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                "- $author",
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      /// Task header
+                      Text(
+                        todayTask,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      /// Task List
+                      if (taskProvider.tasks.isNotEmpty)
+                        ListView.builder(
+                          itemCount: taskProvider.tasks.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final task = taskProvider.tasks[index];
+                            return Card(
+                              color: Colors.white10,
+                              child: ListTile(
+                                title: Text(
+                                  task,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      else
+                        const Text(
+                          "No tasks added yet!",
+                          style: TextStyle(color: Colors.white60),
+                        ),
+                      const SizedBox(height: 24),
+
+                      /// Add Activity button
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: _navigateToAddActivity,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              75,
+                              20,
+                              50,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: const Icon(Icons.add, color: Colors.white),
+                          label: Text(
+                            addActivity,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                Text(
-                  todayTask,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                /// 🔄 This is scrollable only for task list
-                Expanded(
-                  child: ListView.builder(
-                    // implemneted using useSatet ********
-                    // itemCount: _taskController.tasks.length,
-                    itemCount: taskProvider.tasks.length,
-                    itemBuilder: (context, index) {
-                    // implemneted using useSatet ********
-                    // final task = _taskController.tasks[index];
-                      final task = taskProvider.tasks[index];
-                      return Card(
-                        color: Colors.white10,
-                        child: ListTile(
-                          title: Text(
-                            task,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                /// 🔒 Fixed bottom button
-                SafeArea(
-                  child: Center(
-                    child: ElevatedButton.icon(
-                      onPressed: _navigateToAddActivity,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 75, 20, 50),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      label: Text(
-                        addActivity,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

@@ -23,149 +23,130 @@ class _LoginScreenState extends State<Login> {
   }
 
   void _login() {
-  if (_formKey.currentState!.validate()) {
-    log("Login successful! Navigating...");
-    Navigator.pushNamed(context, '/dashboard');
+    if (_formKey.currentState!.validate()) {
+      log("Login successful! Navigating...");
+      Navigator.pushNamed(context, '/dashboard');
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final size = MediaQuery.of(context).size;
+    final isLandscape = size.width > size.height;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 11, 11, 11),
       body: Center(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Image.asset(
+          padding: const EdgeInsets.all(16),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final contentWidth = isLandscape
+                  ? size.width * 0.6
+                  : size.width * 0.9;
+
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
                       'assets/images/health.png',
                       height: 70,
                       width: 70,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Column(
-                          children: const [
-                            Icon(Icons.error, color: Colors.red),
-                            Text(
-                              "Image not found",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        );
-                      },
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Title
-                  const Text(
-                    "DailyWellness",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Pacifico',
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Email Field
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      controller: emailCtrl,
-                      style: const TextStyle(color: Colors.white), // 👈 input text color
-                      decoration: InputDecoration(
-                        labelText: email,
-                        labelStyle: const TextStyle(color: Colors.white70),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white24),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.pinkAccent),
-                        ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "DailyWellness",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontFamily: 'Pacifico',
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return emailRequired;
-                        }
-                        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                        if (!emailRegex.hasMatch(value)) {
-                          return emailValidation;
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Password Field
-                  SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      controller: passwordCtrl,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white), // 👈 input text color
-                      decoration: InputDecoration(
-                        labelText: password,
-                        labelStyle: const TextStyle(color: Colors.white70),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white24),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: contentWidth,
+                      child: TextFormField(
+                        controller: emailCtrl,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: email,
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white24),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.pinkAccent),
+                          ),
                         ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.pinkAccent),
-                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty)
+                            return emailRequired;
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
+                            return emailValidation;
+                          return null;
+                        },
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? passwordRequired : null,
                     ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Login Button
-                  SizedBox(
-                    width: 300,
-                    child: ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 231, 97, 189),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 30,
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: contentWidth,
+                      child: TextFormField(
+                        controller: passwordCtrl,
+                        obscureText: true,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: password,
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white24),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.pinkAccent),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? passwordRequired
+                            : null,
                       ),
-                      child: Text(
-                        login,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Pacifico',
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: contentWidth,
+                      child: ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            231,
+                            97,
+                            189,
+                          ),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 30,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          login,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Pacifico',
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),
