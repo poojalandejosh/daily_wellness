@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:daily_wellness/core/constants/constant.dart';
+import 'package:daily_wellness/core/utils/time_formatter.dart';
 import 'package:daily_wellness/core/widgets/add_activity_screen.dart';
 import 'package:daily_wellness/providers/task_provider.dart';
 import 'package:daily_wellness/services/api/quote_service.dart';
@@ -31,13 +32,20 @@ class _DashboardState extends State<Dashboard> {
     Timer.periodic(const Duration(seconds: 60), (timer) => _updateTime());
   }
 
-  void _updateTime() {
-    final now = DateTime.now();
-    setState(() {
-      currentTime =
-          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} - ${now.day}/${now.month}/${now.year}";
-    });
-  }
+  // void _updateTime() {
+  //   final now = DateTime.now();
+  //   setState(() {
+  //     currentTime =
+  //         "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} - ${now.day}/${now.month}/${now.year}";
+  //   });
+  // }
+
+ void _updateTime() {
+  final now = DateTime.now();
+  setState(() {
+    currentTime = formatCurrentTime(now);
+  });
+}
 
   Future<void> _fetchQuote() async {
     final result = await QuoteService.fetchQuoteOfTheDay();

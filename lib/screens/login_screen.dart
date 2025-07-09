@@ -4,7 +4,8 @@ import 'package:daily_wellness/core/constants/constant.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  final bool showImage;
+  const Login({super.key, this.showImage = true});
 
   @override
   State<Login> createState() => _LoginScreenState();
@@ -50,13 +51,15 @@ class _LoginScreenState extends State<Login> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      'assets/images/health.png',
-                      height: 70,
-                      width: 70,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 24),
+                    if (widget.showImage)
+                      Image.asset(
+                        'assets/images/health.png',
+                        height: 70,
+                        width: 70,
+                        fit: BoxFit.contain,
+                      ),
+                    if (widget.showImage)
+                      const SizedBox(height: 24),
                     const Text(
                       "DailyWellness",
                       style: TextStyle(
