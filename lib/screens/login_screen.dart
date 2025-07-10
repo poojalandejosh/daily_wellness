@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:daily_wellness/core/constants/constant.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +13,7 @@ class _LoginScreenState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -57,8 +56,7 @@ class _LoginScreenState extends State<Login> {
                         width: 70,
                         fit: BoxFit.contain,
                       ),
-                    if (widget.showImage)
-                      const SizedBox(height: 24),
+                    if (widget.showImage) const SizedBox(height: 24),
                     const Text(
                       "DailyWellness",
                       style: TextStyle(
@@ -82,6 +80,10 @@ class _LoginScreenState extends State<Login> {
                           focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.pinkAccent),
                           ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty)
@@ -97,7 +99,7 @@ class _LoginScreenState extends State<Login> {
                       width: contentWidth,
                       child: TextFormField(
                         controller: passwordCtrl,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: password,
@@ -107,6 +109,19 @@ class _LoginScreenState extends State<Login> {
                           ),
                           focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.pinkAccent),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.white60,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
                         ),
                         validator: (value) => value == null || value.isEmpty

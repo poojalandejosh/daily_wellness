@@ -6,8 +6,6 @@ import 'package:daily_wellness/providers/task_provider.dart';
 import 'package:daily_wellness/services/api/quote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// Implemented using useSatet *********
-// import 'package:daily_wellness/core/controller/task_controller.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -19,11 +17,10 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   String userName = "Pooja";
   String currentTime = "";
-  String quote = "Loading quote...";
+  String quote = "";
   String author = "";
-  //  implemented using useState *********8
-  // final List<String> tasks = ["Drink Water 💧", "Meditate 🧘‍♀️", "Walk 🚶‍♂️"];
-  // final TaskController _taskController = TaskController();
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +37,15 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _fetchQuote() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final result = await QuoteService.fetchQuoteOfTheDay();
     setState(() {
       quote = result['quote']!;
       author = result['author']!;
+      isLoading = false;
     });
   }
 
@@ -63,8 +65,6 @@ class _DashboardState extends State<Dashboard> {
       final data = result as Map<String, dynamic>;
       if (data['activity'] != null) {
         setState(() {
-          //  implemented using useState *********
-          // _taskController.addTask(data['activity']);
           Provider.of<TaskProvider>(
             context,
             listen: false,
@@ -83,10 +83,9 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        // ✅ SafeArea added here
         child: Stack(
           children: [
-            // 🔹 Gradient background
+            // Gradient background
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -133,43 +132,53 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "$currentTime: $currentTime",
+                        "Current Time: $currentTime",
                         style: const TextStyle(color: Colors.white70),
                       ),
                       const SizedBox(height: 16),
 
-                      /// Quote Card
+                      // Quote Card with loader
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(26, 17, 17, 17),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              quote,
-                              style: const TextStyle(
-                                fontFamily: 'Caveat',
-                                fontSize: 28,
-                                color: Colors.white,
+                        child: isLoading
+                            ? const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    quote,
+                                    style: const TextStyle(
+                                      fontFamily: 'Caveat',
+                                      fontSize: 28,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Text(
+                                      "- $author",
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Text(
-                                "- $author",
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                       const SizedBox(height: 24),
 
-                      /// Task header
                       Text(
                         todayTask,
                         style: const TextStyle(
@@ -180,7 +189,6 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 12),
 
-                      /// Task List
                       if (taskProvider.tasks.isNotEmpty)
                         ListView.builder(
                           itemCount: taskProvider.tasks.length,
@@ -206,7 +214,6 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       const SizedBox(height: 24),
 
-                      /// Add Activity button
                       Center(
                         child: ElevatedButton.icon(
                           onPressed: _navigateToAddActivity,
