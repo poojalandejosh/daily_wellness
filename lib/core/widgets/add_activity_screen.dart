@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:daily_wellness/core/constants/constant.dart';
 import 'package:flutter/material.dart';
 
 class AddActivityScreen extends StatefulWidget {
@@ -63,7 +64,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                         children: [
                           const SizedBox(height: 12),
                           Text(
-                            "Add New Activity",
+                            addNewActivity,
                             style: TextStyle(
                               fontSize: isLandscape ? 26 : 22,
                               fontWeight: FontWeight.bold,
@@ -76,7 +77,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                             controller: _activityController,
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
-                              labelText: "Activity Name *",
+                              labelText: activityName,
                               labelStyle: const TextStyle(color: Colors.black),
                               filled: true,
                               focusedBorder: OutlineInputBorder(
@@ -88,7 +89,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return "Activity name is required";
+                                return requireName;
                               }
                               return null;
                             },
@@ -99,7 +100,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                             maxLines: isLandscape ? 4 : 3,
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
-                              labelText: "Notes (optional)",
+                              labelText: notesOptional,
                               labelStyle: const TextStyle(color: Colors.black),
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.05),
@@ -118,7 +119,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           ElevatedButton.icon(
                             onPressed: _saveActivity,
                             icon: const Icon(Icons.save),
-                            label: const Text("Save"),
+                            label:  Text(save),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(
                                 255,

@@ -25,7 +25,6 @@ class _LoginScreenState extends State<Login> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      log("Login successful! Navigating...");
       Navigator.pushNamed(context, '/dashboard');
     }
   }

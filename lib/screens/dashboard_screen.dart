@@ -32,20 +32,12 @@ class _DashboardState extends State<Dashboard> {
     Timer.periodic(const Duration(seconds: 60), (timer) => _updateTime());
   }
 
-  // void _updateTime() {
-  //   final now = DateTime.now();
-  //   setState(() {
-  //     currentTime =
-  //         "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} - ${now.day}/${now.month}/${now.year}";
-  //   });
-  // }
-
- void _updateTime() {
-  final now = DateTime.now();
-  setState(() {
-    currentTime = formatCurrentTime(now);
-  });
-}
+  void _updateTime() {
+    final now = DateTime.now();
+    setState(() {
+      currentTime = formatCurrentTime(now);
+    });
+  }
 
   Future<void> _fetchQuote() async {
     final result = await QuoteService.fetchQuoteOfTheDay();
@@ -59,7 +51,7 @@ class _DashboardState extends State<Dashboard> {
     final result = await showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: "Add Activity",
+      barrierLabel: addActivity,
       barrierColor: Colors.black.withOpacity(0.22),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -107,8 +99,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-
-            // 🔸 Foreground content
             LayoutBuilder(
               builder: (context, constraints) {
                 final contentPadding = isLandscape ? size.width * 0.15 : 16.0;
@@ -116,7 +106,7 @@ class _DashboardState extends State<Dashboard> {
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
                     contentPadding,
-                    16, // Removed kToolbarHeight since SafeArea handles top padding
+                    16,
                     contentPadding,
                     32,
                   ),
@@ -125,7 +115,7 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Center(
                         child: Text(
-                          "DailyWellness",
+                          dailyWellness,
                           style: const TextStyle(
                             fontSize: 30,
                             color: Color.fromARGB(255, 111, 94, 94),
@@ -135,7 +125,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 32),
                       Text(
-                        "Welcome, $userName 👋",
+                        "$welcome $userName 👋",
                         style: const TextStyle(
                           fontSize: 24,
                           color: Colors.white,
@@ -143,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Current Time: $currentTime",
+                        "$currentTime: $currentTime",
                         style: const TextStyle(color: Colors.white70),
                       ),
                       const SizedBox(height: 16),
@@ -210,8 +200,8 @@ class _DashboardState extends State<Dashboard> {
                           },
                         )
                       else
-                        const Text(
-                          "No tasks added yet!",
+                        Text(
+                          noTaskAddedYet,
                           style: TextStyle(color: Colors.white60),
                         ),
                       const SizedBox(height: 24),
