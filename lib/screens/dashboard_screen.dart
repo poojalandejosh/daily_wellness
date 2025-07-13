@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:daily_wellness/core/constants/constant.dart';
 import 'package:daily_wellness/core/utils/time_formatter.dart';
+import 'package:daily_wellness/core/widgets/add_activity_button.dart';
 import 'package:daily_wellness/core/widgets/add_activity_screen.dart';
+import 'package:daily_wellness/core/widgets/dashboard_header.dart';
+import 'package:daily_wellness/core/widgets/quote_card_widget.dart';
+import 'package:daily_wellness/core/widgets/task_list.dart';
 import 'package:daily_wellness/providers/task_provider.dart';
 import 'package:daily_wellness/services/api/quote_service.dart';
 import 'package:flutter/material.dart';
@@ -50,29 +54,27 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _navigateToAddActivity() async {
-    final result = await showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: addActivity,
-      barrierColor: Colors.black.withOpacity(0.22),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return const AddActivityScreen();
-      },
-    );
+  final result = await showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: addActivity,
+    barrierColor: Colors.black.withOpacity(0.22),
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return const AddActivityScreen();
+    },
+  );
 
-    if (result != null) {
-      final data = result as Map<String, dynamic>;
-      if (data['activity'] != null) {
-        setState(() {
-          Provider.of<TaskProvider>(
-            context,
-            listen: false,
-          ).addTasks(data['activity']);
-        });
-      }
+  if (result != null) {
+    final data = result as Map<String, dynamic>;
+    final activity = data['activity'];
+    final notes = data['notes'];
+
+    if (activity != null) {
+      Provider.of<TaskProvider>(context, listen: false).addTasks(activity, notes);
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,6 @@ class _DashboardState extends State<Dashboard> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Gradient background
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -101,7 +102,7 @@ class _DashboardState extends State<Dashboard> {
             LayoutBuilder(
               builder: (context, constraints) {
                 final contentPadding = isLandscape ? size.width * 0.15 : 16.0;
-
+                
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
                     contentPadding,
@@ -112,73 +113,16 @@ class _DashboardState extends State<Dashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: Text(
-                          dailyWellness,
-                          style: const TextStyle(
-                            fontSize: 30,
-                            color: Color.fromARGB(255, 111, 94, 94),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 32),
-                      Text(
-                        "$welcome $userName 👋",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                        ),
+                      DashboardHeader(
+                        userName: userName,
+                        currentTime: currentTime,
+                        isLoading: isLoading,
+                        quoteCard: const QuoteCardWidget(),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Current Time: $currentTime",
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      const SizedBox(height: 16),
 
                       // Quote Card with loader
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(26, 17, 17, 17),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: isLoading
-                            ? const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    quote,
-                                    style: const TextStyle(
-                                      fontFamily: 'Caveat',
-                                      fontSize: 28,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Text(
-                                      "- $author",
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
                       const SizedBox(height: 24),
-
                       Text(
                         todayTask,
                         style: const TextStyle(
@@ -187,61 +131,10 @@ class _DashboardState extends State<Dashboard> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 12),
-
-                      if (taskProvider.tasks.isNotEmpty)
-                        ListView.builder(
-                          itemCount: taskProvider.tasks.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final task = taskProvider.tasks[index];
-                            return Card(
-                              color: Colors.white10,
-                              child: ListTile(
-                                title: Text(
-                                  task,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      else
-                        Text(
-                          noTaskAddedYet,
-                          style: TextStyle(color: Colors.white60),
-                        ),
                       const SizedBox(height: 24),
-
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: _navigateToAddActivity,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              75,
-                              20,
-                              50,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          icon: const Icon(Icons.add, color: Colors.white),
-                          label: Text(
-                            addActivity,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
+                      const TaskList(),
+                      const SizedBox(height: 24),
+                      AddActivityButton(onPressed: _navigateToAddActivity),
                     ],
                   ),
                 );
