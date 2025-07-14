@@ -1,5 +1,6 @@
 import 'package:daily_wellness/core/constants/constant.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   final bool showImage;
@@ -22,10 +23,18 @@ class _LoginScreenState extends State<Login> {
     super.dispose();
   }
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, '/dashboard');
+      await saveLoginInfo(emailCtrl.text, passwordCtrl.text);
+      Navigator.pushReplacementNamed(context, '/dashboard');
     }
+  }
+
+  Future<void> saveLoginInfo(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
   }
 
   @override

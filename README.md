@@ -95,3 +95,18 @@ DailyWellness is a Flutter application designed to help users track their daily 
 
 APK
 
+
+todo task 
+
+fix button position 
+quote and button position 
+
+login-> session management -> shared-preference - async storrage 
+spalshscreen /appicon 
+dialog box cross icon
+logout button 
+modal class for json convertor
+  // 'quote': data['quote']['body'] ?? 'No quote found',
+  //         'author': data['quote']['author'] ?? 'Unknown',
+mark completed task
+notes description (limits letters )
