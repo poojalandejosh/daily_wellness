@@ -26,6 +26,7 @@ class _LoginScreenState extends State<Login> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       await saveLoginInfo(emailCtrl.text, passwordCtrl.text);
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/dashboard');
     }
   }

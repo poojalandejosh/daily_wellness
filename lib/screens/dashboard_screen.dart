@@ -10,6 +10,7 @@ import 'package:daily_wellness/providers/task_provider.dart';
 import 'package:daily_wellness/services/api/quote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -139,6 +140,23 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 );
               },
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  if (!context.mounted) return;
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text("Logout"),
+              ),
             ),
           ],
         ),
